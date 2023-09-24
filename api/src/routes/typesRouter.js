@@ -1,9 +1,8 @@
 const { Router } = require('express');
+const { getTypesHandler } = require('../handlers/typesHandlers');
 
 const typesRouter = Router();
 
-typesRouter.get('/', (req, res) => {
-  res.send('Obtiene un arreglo con todos los tipos de pokemones.');
-})
+typesRouter.get('/', getTypesHandler)
 
 module.exports = typesRouter;

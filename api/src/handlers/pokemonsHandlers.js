@@ -1,14 +1,21 @@
-const { createPokemon, getPokemonById } = require('../controllers/pokemonControllers');
+const { createPokemon, getPokemonById, getAllPokemons, searchPokemonByName } = require('../controllers/pokemonControllers');
 const { createOrRetrieveType } = require('../controllers/typeControllers');
 
-const getPokemonsHandler = (req, res) => {
+const getPokemonsHandler = async (req, res) => {
   const { name } = req.query;
   //llamar a la funcion que obtiene los datos de la DB
   //llamar a luna funcion que obtenga los datos de la API
   //unir los datos unificando el formato
   //cuando tenga los datos responder con los mismos
-  if(name) res.send(`NIY: trae pokemons con nombre ${name}`);
-  else res.send('NIY: Obtiene un arreglo de objetos, donde cada objeto es un pokemon con su información.');
+
+  
+  
+  try {
+    const results = name ? await searchPokemonByName(name) : await getAllPokemons();
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(400).json({ error: error.message});
+  }
 }
 
 const getPokemonByIdHandler = async (req, res) => {
@@ -26,10 +33,10 @@ const getPokemonByIdHandler = async (req, res) => {
 const createPokemonHandler = async (req, res) => {
   try {
     const { name, image, hp, attack, defense, speed, height, weight, types } = req.body;
-    const newPokemon = await createPokemon(name, image, hp, attack, defense, speed, height, weight); //Crea un pokemon en la db
+    const newPokemon = await createPokemon(name, image, hp, attack, defense, speed, height, weight, types); //Crea un pokemon en la db
     const typeRecords = await Promise.all(types.map(typeName => createOrRetrieveType(typeName))); //se obtenen los tipos, si no existe en la db lo crea
 
-    await newPokemon.addTypes(typeRecords); //crea la realcion del pokemon con los tipos
+    await newPokemon.addTypes(typeRecords); //crea la relacion del pokemon con los tipos
 
     res.status(200).json(newPokemon);
   } catch (error) {
