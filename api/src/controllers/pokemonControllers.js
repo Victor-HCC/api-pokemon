@@ -65,8 +65,8 @@ const createPokemon = async (name, image, hp, attack, defense, speed, height, we
 const getPokemonById = async (id, source) => {
   const pokemon = 
     source === 'API' 
-      ? (await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`))
-          .data
+      ? cleanData((await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`))
+          .data)
       : await Pokemon.findByPk(id);
 
   return pokemon;
